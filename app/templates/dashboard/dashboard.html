@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard - Biblioteca{% endblock %}
+
+{% block content %}
+<div class="dashboard">
+    <h2>Bienvenido, {{ session.get('user_nombre') }}! <i class="fas fa-hand"></i></h2>
+    
+    <div class="stats-container">
+        <div class="stat-card">
+            <h3><i class="fas fa-book"></i> Libros Disponibles</h3>
+            <p class="stat-number">{{ total_libros }}</p>
+        </div>
+        
+        <div class="stat-card">
+            <h3><i class="fas fa-book-open"></i> Tus Préstamos</h3>
+            <p class="stat-number">{{ prestamos|length if prestamos else 0 }}</p>
+        </div>
+        
+        {% if session.get('user_rol') == 'ADMIN' %}
+        <div class="stat-card">
+            <h3><i class="fas fa-users"></i> Panel Administrativo</h3>
+            <p class="stat-number"><i class="fas fa-check"></i></p>
+        </div>
+        {% endif %}
+    </div>
+    
+    <hr style="margin: 2rem 0;">
+    
+    {% if session.get('user_rol') == 'ADMIN' %}
+    <!-- PANEL DEL ADMINISTRADOR: Préstamos Activos -->
+    <div class="admin-panel">
+        <h3><i class="fas fa-clipboard"></i> Gestión de Préstamos Activos</h3>
+        <p style="margin-bottom: 1rem;">
+            <a href="{{ url_for('dashboard.gestionar_prestamos') }}" class="btn btn-primary">Ver todos los préstamos activos</a>
+        </p>
+        <p style="color: #666; font-size: 0.9rem;">
+            Aquí puedes ver qué libro tiene cada usuario y recepcionar las devoluciones.
+        </p>
+    </div>
+    <hr style="margin: 2rem 0;">
+    {% endif %}
+    
+    {% if prestamos and prestamos|length > 0 %}
+    <div class="prestamos-seccion">
+        <h3><i class="fas fa-book"></i> Tus Préstamos Activos</h3>
+        <div class="prestamos-list">
+            {% for prestamo in prestamos %}
+            {% if prestamo.estado == 'ACTIVO' %}
+            <div class="prestamo-card">
+                <h4>{{ prestamo.libro_titulo }}</h4>
+                <p><strong>Autor:</strong> {{ prestamo.libro_autor }}</p>
+                <p><strong>Devolución esperada:</strong> {{ prestamo.fecha_devolcion_esperada }}</p>
+                <span class="badge">{{ prestamo.estado }}</span>
+            </div>
+            {% endif %}
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+    
+    <hr style="margin: 2rem 0;">
+    
+    <div class="quick-links">
+        <h3>Acceso Rápido</h3>
+        <ul>
+            <li><a href="{{ url_for('libros.lista_libros') }}" class="btn btn-secondary"><i class="fas fa-book"></i> Ver Libros</a></li>
+            {% if session.get('user_rol') == 'ADMIN' %}
+            <li><a href="{{ url_for('usuarios.lista_usuarios') }}" class="btn btn-secondary"><i class="fas fa-users"></i> Gestionar Usuarios</a></li>
+            <li><a href="{{ url_for('libros.nuevo_libro') }}" class="btn btn-secondary"><i class="fas fa-plus"></i> Agregar Libro</a></li>
+            <li><a href="{{ url_for('categorias.lista_categorias') }}" class="btn btn-secondary"><i class="fas fa-folder"></i> Gestionar Categorías</a></li>
+            {% endif %}
+        </ul>
+    </div>
+</div>
+{% endblock %}

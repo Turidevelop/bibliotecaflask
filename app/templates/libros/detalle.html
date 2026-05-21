@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ libro.titulo }} - Biblioteca{% endblock %}
+
+{% block content %}
+<div class="libro-detalle">
+    <div class="libro-header">
+        <h1>{{ libro.titulo }}</h1>
+        <p class="autor"><strong>Autor:</strong> {{ libro.autor }}</p>
+    </div>
+
+    <div class="libro-info">
+        <div class="info-item">
+            <strong>ISBN:</strong> {{ libro.isbn or 'N/A' }}
+        </div>
+        <div class="info-item">
+            <strong>Categoría:</strong> {{ libro.categoria }}
+        </div>
+        <div class="info-item">
+            <strong>Año de Publicación:</strong> {{ libro.anio_publicacion or 'N/A' }}
+        </div>
+        <div class="info-item">
+            <strong>Disponibles:</strong> {{ libro.cantidad_disponible }} / {{ libro.cantidad_total }}
+        </div>
+        <div class="info-item">
+            <strong>Estado:</strong> <span class="badge">{{ libro.estado }}</span>
+        </div>
+    </div>
+
+    {% if libro.descripcion %}
+    <div class="libro-descripcion">
+        <h3>Descripción</h3>
+        <p>{{ libro.descripcion }}</p>
+    </div>
+    {% endif %}
+
+    <div class="libro-acciones">
+        {% if error %}
+        <div class="alert alert-danger">{{ error }}</div>
+        {% endif %}
+        
+        {% if libro.cantidad_disponible > 0 %}
+        <form method="POST" action="{{ url_for('libros.solicitar_prestamo', libro_id=libro.id) }}" style="display:inline;">
+            <button type="submit" class="btn btn-primary"><i class="fas fa-clipboard"></i> Solicitar Préstamo</button>
+        </form>
+        {% else %}
+        <button class="btn btn-secondary" disabled>Sin disponibilidad</button>
+        {% endif %}
+        
+        {% if session.get('user_rol') == 'ADMIN' %}
+        <a href="{{ url_for('libros.editar_libro', libro_id=libro.id) }}" class="btn btn-warning">Editar</a>
+        <form method="POST" action="{{ url_for('libros.eliminar_libro', libro_id=libro.id) }}" style="display:inline;">
+            <button type="submit" class="btn btn-danger" onclick="return confirm('¿Eliminar este libro?')">Eliminar</button>
+        </form>
+        {% endif %}
+    </div>
+
+    <a href="{{ url_for('libros.lista_libros') }}" class="btn btn-secondary">Volver</a>
+</div>
+{% endblock %}

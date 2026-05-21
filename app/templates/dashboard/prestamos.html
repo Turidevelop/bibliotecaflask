@@ -1,0 +1,141 @@
+{% extends 'base.html' %}
+
+{% block title %}Gestionar Préstamos - Biblioteca{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h2><i class="fas fa-clipboard"></i> Gestión de Préstamos Activos</h2>
+    <p style="margin-bottom: 1.5rem;">
+        <a href="{{ url_for('dashboard.dashboard') }}" class="btn btn-secondary">← Volver al Dashboard</a>
+    </p>
+    
+    {% if prestamos and prestamos|length > 0 %}
+    <div class="table-container">
+        <table class="tabla-prestamos">
+            <thead>
+                <tr>
+                    <th>Usuario</th>
+                    <th>Email</th>
+                    <th>Libro</th>
+                    <th>Autor</th>
+                    <th>Fecha Préstamo</th>
+                    <th>Devolución Esperada</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for prestamo in prestamos %}
+                <tr>
+                    <td><strong>{{ prestamo.usuario_nombre }}</strong></td>
+                    <td>{{ prestamo.usuario_email }}</td>
+                    <td>{{ prestamo.libro_titulo }}</td>
+                    <td>{{ prestamo.libro_autor }}</td>
+                    <td>{{ prestamo.fecha_prestamo.strftime('%d/%m/%Y') if prestamo.fecha_prestamo else 'N/A' }}</td>
+                    <td>
+                        {% if prestamo.fecha_devolcion_esperada %}
+                            {{ prestamo.fecha_devolcion_esperada.strftime('%d/%m/%Y') if prestamo.fecha_devolcion_esperada is string == False else prestamo.fecha_devolcion_esperada }}
+                        {% else %}
+                            N/A
+                        {% endif %}
+                    </td>
+                    <td>
+                        <form action="{{ url_for('dashboard.recepcionar_devolucion', prestamo_id=prestamo.id) }}" method="POST" style="display: inline;">
+                            <button type="submit" class="btn btn-success btn-sm" onclick="return confirm('¿Confirmar devolución?')">
+                                ✔ Recepcionar
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    
+    <div class="info-box" style="margin-top: 2rem; padding: 1rem; background-color: #f0f8ff; border-left: 4px solid #2196F3; border-radius: 4px;">
+        <h4><i class="fas fa-info-circle"></i> Información</h4>
+        <p>Total de préstamos activos: <strong>{{ prestamos|length }}</strong></p>
+        <p>Al hacer clic en "Recepcionar", el libro se marcará como devuelto y la cantidad disponible se incrementará automáticamente.</p>
+    </div>
+    
+    {% else %}
+    <div class="alert-box" style="padding: 2rem; text-align: center; background-color: #f5f5f5; border-radius: 4px;">
+        <h3><i class="fas fa-check"></i> No hay préstamos activos</h3>
+        <p>Todos los libros han sido devueltos.</p>
+        <p style="margin-top: 1rem;">
+            <a href="{{ url_for('dashboard.dashboard') }}" class="btn btn-secondary">Volver al Dashboard</a>
+        </p>
+    </div>
+    {% endif %}
+</div>
+
+<style>
+    .table-container {
+        overflow-x: auto;
+        background-color: white;
+        border-radius: 4px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .tabla-prestamos {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.95rem;
+    }
+
+    .tabla-prestamos thead {
+        background-color: #f5f5f5;
+        border-bottom: 2px solid #ddd;
+    }
+
+    .tabla-prestamos th {
+        padding: 12px;
+        text-align: left;
+        font-weight: 600;
+        color: #333;
+    }
+
+    .tabla-prestamos td {
+        padding: 12px;
+        border-bottom: 1px solid #eee;
+    }
+
+    .tabla-prestamos tbody tr:hover {
+        background-color: #f9f9f9;
+    }
+
+    .btn-sm {
+        padding: 6px 12px;
+        font-size: 0.85rem;
+        border: none;
+        border-radius: 3px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+
+    .btn-success {
+        background-color: #4CAF50;
+        color: white;
+    }
+
+    .btn-success:hover {
+        background-color: #45a049;
+    }
+
+    .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem;
+    }
+
+    .info-box {
+        margin-top: 2rem;
+    }
+
+    .alert-box {
+        padding: 2rem;
+        text-align: center;
+        background-color: #f5f5f5;
+        border-radius: 4px;
+    }
+</style>
+{% endblock %}

@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block title %}{% if categoria %}Editar Categoría{% else %}Nueva Categoría{% endif %} - Biblioteca{% endblock %}
+
+{% block content %}
+<h2>{% if categoria %}<i class="fas fa-edit"></i> Editar Categoría{% else %}<i class="fas fa-plus"></i> Nueva Categoría{% endif %}</h2>
+
+{% if error %}
+<div class="alert alert-danger">{{ error }}</div>
+{% endif %}
+
+<form method="POST" class="form-container">
+    <div class="form-group">
+        <label for="nombre">Nombre:</label>
+        <input type="text" id="nombre" name="nombre" value="{{ categoria.nombre if categoria else '' }}" required>
+    </div>
+    
+    <div class="form-group">
+        <label for="descripcion">Descripción:</label>
+        <textarea id="descripcion" name="descripcion" rows="4">{{ categoria.descripcion if categoria else '' }}</textarea>
+    </div>
+    
+    <button type="submit" class="btn btn-primary">{% if categoria %}Actualizar Categoría{% else %}Guardar Categoría{% endif %}</button>
+    <a href="{{ url_for('categorias.lista_categorias') }}" class="btn btn-secondary">Cancelar</a>
+</form>
+{% endblock %}

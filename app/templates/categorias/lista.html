@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+
+{% block title %}Categorías - Biblioteca{% endblock %}
+
+{% block content %}
+<div class="categorias-header">
+    <h2><i class="fas fa-folder"></i> Gestión de Categorías</h2>
+    <a href="{{ url_for('categorias.nueva_categoria') }}" class="btn btn-primary">+ Nueva Categoría</a>
+</div>
+
+{% if categorias %}
+<table class="table">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Nombre</th>
+            <th>Descripción</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for cat in categorias %}
+        <tr>
+            <td>{{ cat.id }}</td>
+            <td>{{ cat.nombre }}</td>
+            <td>{{ cat.descripcion or 'N/A' }}</td>
+            <td>
+                <a href="{{ url_for('categorias.editar_categoria', categoria_id=cat.id) }}" class="btn btn-sm btn-warning">Editar</a>
+                <form method="POST" action="{{ url_for('categorias.eliminar_categoria', categoria_id=cat.id) }}" style="display:inline;">
+                    <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('¿Estás seguro de que quieres eliminar esta categoría?')">Eliminar</button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<div class="alert alert-info">
+    No hay categorías creadas.
+</div>
+{% endif %}
+{% endblock %}

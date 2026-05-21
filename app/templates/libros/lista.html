@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+
+{% block title %}Libros - Biblioteca{% endblock %}
+
+{% block content %}
+<div class="libros-header">
+    <h2><i class="fas fa-book"></i> Catálogo de Libros</h2>
+    {% if session.get('user_rol') == 'ADMIN' %}
+    <a href="{{ url_for('libros.nuevo_libro') }}" class="btn btn-primary">+ Agregar Libro</a>
+    {% endif %}
+</div>
+
+{% if libros %}
+<div class="libros-container">
+    {% for libro in libros %}
+    <div class="libro-card">
+        <h3>{{ libro.titulo }}</h3>
+        <p class="autor">{{ libro.autor }}</p>
+        <p class="categoria">{{ libro.categoria }}</p>
+        <div class="libro-info">
+            <p><strong>Disponibles:</strong> {{ libro.cantidad_disponible }}/{{ libro.cantidad_total }}</p>
+            <p><strong>Estado:</strong> <span class="badge">{{ libro.estado }}</span></p>
+        </div>
+        <div class="libro-acciones">
+            <a href="{{ url_for('libros.detalle_libro', libro_id=libro.id) }}" class="btn btn-sm btn-primary">Ver Detalle</a>
+            {% if session.get('user_rol') == 'ADMIN' %}
+            <a href="{{ url_for('libros.editar_libro', libro_id=libro.id) }}" class="btn btn-sm btn-warning">Editar</a>
+            {% endif %}
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="alert alert-info">
+    No hay libros disponibles en el catálogo.
+</div>
+{% endif %}
+{% endblock %}
+
